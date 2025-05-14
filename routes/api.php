@@ -10,4 +10,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/listPrices',[PSController::class,'index']);
+Route::get('/listProducts',[PSController::class,'getProducts']);
+Route::get('/listPrices',[PSController::class,'getPrices']);
+Route::post('/productImg',[PSController::class,'productImg']);
