@@ -56,11 +56,12 @@ class PSController extends Controller
 
     public function productStock(Request $r)
     {
+      /*   return $r->all(); */
         try {
             $validated = $r->validate([
                 'id_warehouse' => 'required|integer',
                 'id_product' => 'required|integer',
-                'id_product_atribute' => 'nullable|integer',
+                'id_product_attribute' => 'nullable|integer',
                 'reference' => 'required|string|max:255',
                 'physical_quantity' => 'required|integer',
                 'usable_quantity' => 'required|integer',
@@ -69,7 +70,7 @@ class PSController extends Controller
 
             $stock = new PS_Stock();
 
-            $stock->fill([$validated])->save();
+            $stock->fill($validated)->save();
 
             return response()->json(['status' => true, 'response' => $stock]);
         } catch (Exception $e) {

@@ -16,7 +16,7 @@ class PS_Stock extends Model
     protected $fillable=[
         'id_warehouse',
         'id_product',
-        'id_product_atribute',
+        'id_product_attribute',
         'reference',
         'physical_quantity',
         'usable_quantity',
