@@ -82,13 +82,13 @@ class PSController extends Controller
     {
         try {
             $validated = $r->validate([
-                'id_warehouse' => 'required|integer',
+                'id_currency' => 'required|integer',
                 'name' => 'required|string|max:255',
             ]);
 
             $plist = new PS_PriceList();
 
-            $plist->fill([$validated])->save();
+            $plist->fill($validated)->save();
 
             return response()->json(['status' => true, 'response' => $plist]);
         } catch (Exception $e) {
@@ -107,7 +107,7 @@ class PSController extends Controller
 
             $price = new PS_PriceProduct();
 
-            $price->fill([$validated])->save();
+            $price->fill($validated)->save();
 
             return response()->json(['status' => true, 'response' => $price]);
         } catch (Exception $e) {
