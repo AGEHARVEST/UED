@@ -6,6 +6,9 @@ use App\Models\PS_PriceList;
 use App\Models\PS_PriceProduct;
 use App\Models\PS_Products;
 use App\Models\PS_Stock;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -48,6 +51,29 @@ class PSController extends Controller
     {
         try {
 
+             $productId = $r->product_id;
+             $imageBase64 = $r->image_base64;
+
+             $imageContent = base64_decode($imageBase64);
+
+              $fileName = Str::random(10) . '.jpg'; // o .png según el caso
+             $filePath = storage_path('app/temp/' . $fileName);
+
+            if (!file_exists(storage_path('app/temp'))) {
+                        mkdir(storage_path('app/temp'), 0755, true);
+                    }
+
+              file_put_contents($filePath, $imageContent);
+
+                $apiUrl = "https://tutienda.com/api/images/products/{$productId}";
+                $apiKey = config('services.prestashop.key'); // o directamente "yourapikey"
+
+                $response = Http::withBasicAuth($apiKey, '')
+                    ->attach('image', file_get_contents($filePath), $fileName)
+                    ->post($apiUrl);
+
+                // Borrar el archivo temporal
+                unlink($filePath);
             return response()->json(['status' => true, 'response' =>$r->all()]);
         } catch (Exception $e) {
             return response()->json(['status' => false, 'response' => $e->getMessage()]);
