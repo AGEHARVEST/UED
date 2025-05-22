@@ -48,7 +48,7 @@ class PSController extends Controller
     {
         try {
 
-            return response()->json(['status' => true, 'response' =>'entro a funcion']);
+            return response()->json(['status' => true, 'response' =>$r->all()]);
         } catch (Exception $e) {
             return response()->json(['status' => false, 'response' => $e->getMessage()]);
         }
