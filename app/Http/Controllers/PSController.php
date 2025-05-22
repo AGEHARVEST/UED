@@ -53,8 +53,10 @@ class PSController extends Controller
 
              $productId = $r->product_id;
              $imageBase64 = $r->image_base64;
-
              $imageContent = base64_decode($imageBase64);
+             if (str_contains($imageBase64, ',')) {
+                 [$header, $imageBase64] = explode(',', $imageBase64);
+                }
 
               $fileName = Str::random(10) . '.jpg';
              $filePath = storage_path('app/temp/' . $fileName);
@@ -74,7 +76,11 @@ class PSController extends Controller
 
                 // Borrar el archivo temporal
                 unlink($filePath);
-            return response()->json(['status' => true, 'response' =>$response]);
+            return response()->json([
+                'status' => $response->successful(),
+                'http_status' => $response->status(),
+                'prestashop_body' => $response->body(),
+            ]);
         } catch (Exception $e) {
             return response()->json(['status' => false, 'response' => $e->getMessage()]);
         }
