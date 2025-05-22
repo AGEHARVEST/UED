@@ -74,7 +74,7 @@ class PSController extends Controller
 
                 // Borrar el archivo temporal
                 unlink($filePath);
-            return response()->json(['status' => true, 'response' =>$r->all()]);
+            return response()->json(['status' => true, 'response' =>$response]);
         } catch (Exception $e) {
             return response()->json(['status' => false, 'response' => $e->getMessage()]);
         }
