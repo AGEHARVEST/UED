@@ -56,7 +56,7 @@ class PSController extends Controller
 
              $imageContent = base64_decode($imageBase64);
 
-              $fileName = Str::random(10) . '.jpg'; // o .png según el caso
+              $fileName = Str::random(10) . '.jpg';
              $filePath = storage_path('app/temp/' . $fileName);
 
             if (!file_exists(storage_path('app/temp'))) {
@@ -66,7 +66,7 @@ class PSController extends Controller
               file_put_contents($filePath, $imageContent);
 
                 $apiUrl = "https://tutienda.com/api/images/products/{$productId}";
-                $apiKey = config('services.prestashop.key'); // o directamente "yourapikey"
+                $apiKey = 's4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
 
                 $response = Http::withBasicAuth($apiKey, '')
                     ->attach('image', file_get_contents($filePath), $fileName)
