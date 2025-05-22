@@ -60,7 +60,7 @@ class PSController extends Controller
 
         $imageContent = base64_decode($imageBase64);
 
-        $apiUrl = "https://tutienda.com/api/images/products/{$productId}";
+        $apiUrl = "http://40.124.183.121/api/images/products/{$productId}";
         $apiKey = 's4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
 
         $response = Http::withHeaders([
