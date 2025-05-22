@@ -61,7 +61,7 @@ class PSController extends Controller
         $imageContent = base64_decode($imageBase64);
 
         $apiUrl = "http://40.124.183.121/api/images/products/{$productId}";
-        $apiKey = 's4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
+        $apiKey = '4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
 
         $response = Http::withHeaders([
                 'Content-Type' => 'image/jpeg'
