@@ -59,17 +59,14 @@ class PSController extends Controller
         }
 
         $imageContent = base64_decode($imageBase64);
+        $fileName = Str::random(10) . '.jpg';
 
         $apiUrl = "http://40.124.183.121/api/images/products/{$productId}";
         $apiKey = '4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
 
-        $response = Http::withHeaders([
-                'Content-Type' => 'image/jpeg'
-            ])
-            ->withBasicAuth($apiKey, '')
-            ->send('POST', $apiUrl, [
-                'body' => $imageContent,
-            ]);
+        $response = Http::withBasicAuth($apiKey, '')
+            ->attach('image', $imageContent, $fileName)
+            ->post($apiUrl);
 
         return response()->json([
             'status' => $response->successful(),
