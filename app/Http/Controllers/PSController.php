@@ -47,44 +47,39 @@ class PSController extends Controller
     }
 
 
-    public function productImg(Request $r)
-    {
-        try {
+   public function productImg(Request $r)
+{
+    try {
+        $productId = $r->product_id;
+        $imageBase64 = $r->image_base64;
 
-             $productId = $r->product_id;
-             $imageBase64 = $r->image_base64;
-             $imageContent = base64_decode($imageBase64);
-             if (str_contains($imageBase64, ',')) {
-                 [$header, $imageBase64] = explode(',', $imageBase64);
-                }
-
-              $fileName = Str::random(10) . '.jpg';
-             $filePath = storage_path('app/temp/' . $fileName);
-
-            if (!file_exists(storage_path('app/temp'))) {
-                        mkdir(storage_path('app/temp'), 0755, true);
-                    }
-
-              file_put_contents($filePath, $imageContent);
-
-                $apiUrl = "https://tutienda.com/api/images/products/{$productId}";
-                $apiKey = 's4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
-
-                $response = Http::withBasicAuth($apiKey, '')
-                    ->attach('image', file_get_contents($filePath), $fileName)
-                    ->post($apiUrl);
-
-                // Borrar el archivo temporal
-                unlink($filePath);
-            return response()->json([
-                'status' => $response->successful(),
-                'http_status' => $response->status(),
-                'prestashop_body' => $response->body(),
-            ]);
-        } catch (Exception $e) {
-            return response()->json(['status' => false, 'response' => $e->getMessage()]);
+        // Quitar encabezado si existe
+        if (str_contains($imageBase64, ',')) {
+            [, $imageBase64] = explode(',', $imageBase64);
         }
+
+        $imageContent = base64_decode($imageBase64);
+
+        $apiUrl = "https://tutienda.com/api/images/products/{$productId}";
+        $apiKey = 's4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
+
+        $response = Http::withHeaders([
+                'Content-Type' => 'image/jpeg'
+            ])
+            ->withBasicAuth($apiKey, '')
+            ->send('POST', $apiUrl, [
+                'body' => $imageContent,
+            ]);
+
+        return response()->json([
+            'status' => $response->successful(),
+            'http_status' => $response->status(),
+            'prestashop_body' => $response->body(),
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => false, 'error' => $e->getMessage()]);
     }
+}
 
     public function productStock(Request $r)
     {
