@@ -91,7 +91,7 @@ class PSController extends Controller
             }
 
             $imageContent = base64_decode($imageBase64);
-            $fileName = Str::random(10) . '.jpg';
+            $fileName =   $imageId;
 
             $apiUrl = "http://40.124.183.121/api/images/products/{$productId}/{$imageId}?ps_method=PUT";
             $apiKey = '4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
