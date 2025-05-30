@@ -16,6 +16,7 @@ Route::get('/listPrices',[PSController::class,'getPrices']);
 
 Route::post('/productImg',[PSController::class,'productImg']);
 Route::post('/productImgE',[PSController::class,'productImgE']);
+Route::get('/stringTest',[PSController::class,'stringTest']);
 
 Route::post('/productStock',[PSController::class,'productStock']);
 Route::post('/productPriceList',[PSController::class,'productPriceList']);

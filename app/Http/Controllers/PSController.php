@@ -110,6 +110,22 @@ class PSController extends Controller
         }
     }
 
+
+    public function stringTest(Request $r){
+        try{
+
+            $cadena=explode('-',$r->cadena);
+
+            if (isset($cadena[1]) && ctype_digit($cadena[1])) {
+            return response()->json(['status' => true]);
+        } else {
+            return response()->json(['status' => false]);
+        }
+        }catch (\Exception $e) {
+            return response()->json(['status' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
     public function productStock(Request $r)
     {
       /*   return $r->all(); */
