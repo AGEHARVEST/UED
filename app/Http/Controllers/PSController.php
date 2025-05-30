@@ -59,49 +59,56 @@ class PSController extends Controller
         }
 
         $imageContent = base64_decode($imageBase64);
-        $fileName = Str::random(10) . '.jpg';
+        $fileName = $r->nombre_img;
 
+        $apiUrl = "http://40.124.183.121/api/images/products/{$productId}";
         $apiKey = '4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
-        $apiBaseUrl = "http://40.124.183.121/api";
 
-        // 1. Verificamos si el producto ya tiene imágenes
-        $imgCheck = Http::withBasicAuth($apiKey, '')
-            ->get("{$apiBaseUrl}/images/products/{$productId}");
-
-        if (!$imgCheck->successful()) {
-            return response()->json(['status' => false, 'error' => 'Error al verificar imágenes.']);
-        }
-
-        // Convertir XML a SimpleXMLElement
-        $xml = simplexml_load_string($imgCheck->body());
-
-        // Obtener ID de imagen si existe
-        $existingImageId = isset($xml->image['id']) ? (int) $xml->image['id'] : null;
-
-        if ($existingImageId) {
-            // 2. Si hay imagen, reemplazarla (PUT)
-            $apiUrl = "{$apiBaseUrl}/images/products/{$productId}/{$existingImageId}?ps_method=PUT";
-        } else {
-            // 3. Si no hay imagen, crear nueva (POST)
-            $apiUrl = "{$apiBaseUrl}/images/products/{$productId}";
-        }
-
-        // 4. Subir imagen (sea PUT o POST)
         $response = Http::withBasicAuth($apiKey, '')
             ->attach('image', $imageContent, $fileName)
-            ->post($apiUrl); // usaremos POST en ambos casos, con ps_method=PUT si es reemplazo
+            ->post($apiUrl);
 
         return response()->json([
             'status' => $response->successful(),
             'http_status' => $response->status(),
             'prestashop_body' => $response->body(),
-            'action' => $existingImageId ? 'replaced' : 'created',
         ]);
     } catch (\Exception $e) {
         return response()->json(['status' => false, 'error' => $e->getMessage()]);
     }
 }
 
+    public function productImgE(Request $r){
+    try {
+            $productId = $r->product_id;
+            $imageBase64 = $r->image_base64;
+            $imageId = $r->image_id;
+
+       /*      return $imageId; */
+            // Quitar encabezado si existe
+            if (str_contains($imageBase64, ',')) {
+                [, $imageBase64] = explode(',', $imageBase64);
+            }
+
+            $imageContent = base64_decode($imageBase64);
+            $fileName = Str::random(10) . '.jpg';
+
+            $apiUrl = "http://40.124.183.121/api/images/products/{$productId}/{$imageId}?ps_method=PUT";
+            $apiKey = '4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
+
+            $response = Http::withBasicAuth($apiKey, '')
+                ->attach('image', $imageContent, $fileName)
+                ->post($apiUrl);
+
+            return response()->json([
+                'status' => $response->successful(),
+                'http_status' => $response->status(),
+               'prestashop_body' => base64_encode($response->body()),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'error' => $e->getMessage()]);
+        }
+    }
 
     public function productStock(Request $r)
     {
