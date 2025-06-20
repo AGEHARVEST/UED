@@ -47,41 +47,25 @@ class PSController extends Controller
     }
 
 
- public function productImg(Request $r)
+   public function productImg(Request $r)
 {
     try {
         $productId = $r->product_id;
         $imageBase64 = $r->image_base64;
-        $fileName = $r->nombre_img;
 
-        // Detectar y quitar encabezado base64 si existe y obtener MIME
-        if (preg_match('/^data:(.*);base64,/', $imageBase64, $matches)) {
-            $mimeType = $matches[1]; // tipo mime detectado
-            $imageBase64 = substr($imageBase64, strpos($imageBase64, ',') + 1);
-        } else {
-            // Asignar mime según extension
-            $extension = pathinfo($fileName, PATHINFO_EXTENSION);
-            $mimeMap = [
-                'png' => 'image/png',
-                'jpg' => 'image/jpeg',
-                'jpeg' => 'image/jpeg',
-                'gif' => 'image/gif',
-                'webp' => 'image/webp',
-            ];
-            $mimeType = $mimeMap[strtolower($extension)] ?? 'application/octet-stream';
+        // Quitar encabezado si existe
+        if (str_contains($imageBase64, ',')) {
+            [, $imageBase64] = explode(',', $imageBase64);
         }
 
         $imageContent = base64_decode($imageBase64);
-
-        if (!$imageContent || strlen($imageContent) < 100) {
-            return response()->json(['status' => false, 'error' => 'La imagen no pudo decodificarse correctamente']);
-        }
+        $fileName = $r->nombre_img;
 
         $apiUrl = "http://40.124.183.121/api/images/products/{$productId}";
         $apiKey = '4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
 
         $response = Http::withBasicAuth($apiKey, '')
-            ->attach('image', $imageContent, $fileName, ['Content-Type' => $mimeType])
+            ->attach('image', $imageContent, $fileName)
             ->post($apiUrl);
 
         return response()->json([
@@ -93,8 +77,6 @@ class PSController extends Controller
         return response()->json(['status' => false, 'error' => $e->getMessage()]);
     }
 }
-
-
 
     public function productImgE(Request $r){
     try {
@@ -112,7 +94,7 @@ class PSController extends Controller
             $fileName =   $imageId;
 
             $apiUrl = "http://40.124.183.121/api/images/products/{$productId}/{$imageId}?ps_method=PUT";
-            $apiKey = 'MKE7HBSJK621K9DI7PISIGA7VQAVGTHJ';
+            $apiKey = '4Z4CSJ4WN4PYMM4GKTCWGMJNYMSGRCGH';
 
             $response = Http::withBasicAuth($apiKey, '')
                 ->attach('image', $imageContent, $fileName)
@@ -121,10 +103,10 @@ class PSController extends Controller
             return response()->json([
                 'status' => $response->successful(),
                 'http_status' => $response->status(),
-               'prestashop_body' => $response->body(),
+               'prestashop_body' => base64_encode($response->body()),
             ]);
         } catch (\Exception $e) {
-            return response()->json(['status' => false, 'error' => $e->getMessage(), 'prestashop_body_raw' => $response->body()]);
+            return response()->json(['status' => false, 'error' => $e->getMessage()]);
         }
     }
 
